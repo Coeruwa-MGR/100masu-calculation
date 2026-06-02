@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>100マス計算</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="setup" id="setupPanel" aria-labelledby="appTitle">
+        <div>
+          <p class="eyebrow">100マス練習</p>
+          <h1 id="appTitle">100マス計算</h1>
+        </div>
+
+        <div class="mode-card" role="radiogroup" aria-label="計算モード">
+          <label class="mode-option">
+            <input type="radio" name="mode" value="addition" checked>
+            <span>足し算</span>
+          </label>
+          <label class="mode-option">
+            <input type="radio" name="mode" value="multiplication">
+            <span>掛け算</span>
+          </label>
+        </div>
+
+        <button class="primary-button" id="startButton" type="button">Start</button>
+      </section>
+
+      <section class="practice is-hidden" id="practicePanel" aria-label="100マス計算">
+        <header class="practice-header">
+          <div>
+            <p class="eyebrow" id="modeLabel">足し算</p>
+            <h2 id="statusText">準備中</h2>
+          </div>
+          <div class="timer" aria-live="polite">
+            <span id="elapsedTime">00:00.0</span>
+          </div>
+          <button class="secondary-button" id="restartButton" type="button">やり直す</button>
+        </header>
+
+        <div class="grid-wrap" id="gridWrap">
+          <div class="grid" id="calculationGrid" aria-label="計算表"></div>
+        </div>
+
+        <div class="finish-overlay is-hidden" id="finishOverlay" aria-live="polite">
+          <div class="finish-panel" role="status">
+            <p class="finish-title">Finish</p>
+            <div class="finish-time">
+              <span>かかった時間</span>
+              <strong id="finalTime">00:00.0</strong>
+            </div>
+            <div class="finish-rate">
+              <span>正答率</span>
+              <strong id="accuracyRate">0%</strong>
+            </div>
+            <div class="finish-date">
+              <span>完了日時</span>
+              <strong id="completedAt">0000.00.00 00:00:00</strong>
+            </div>
+            <p class="learner-note">この画面をスクリーンショットして、記録に残しましょう</p>
+            <div class="screenshot-preview is-hidden" id="screenshotPreview">
+              <img id="resultImage" alt="100マス計算の結果画像">
+              <p>緑は正解、赤はミスした問題です</p>
+            </div>
+            <button class="primary-button retry-button" id="retryButton" type="button">Retry</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
