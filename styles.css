@@ -157,6 +157,13 @@ h2 {
   transform: translateY(1px);
 }
 
+.credit {
+  margin: -10px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .practice {
   position: relative;
   display: grid;
