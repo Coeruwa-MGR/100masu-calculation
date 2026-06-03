@@ -3,7 +3,7 @@ const practicePanel = document.getElementById("practicePanel");
 const startButton = document.getElementById("startButton");
 const restartButton = document.getElementById("restartButton");
 const calculationGrid = document.getElementById("calculationGrid");
-const keypadButtons = document.querySelectorAll(".keypad-button");
+const keypadButtons = document.querySelectorAll("[data-key]");
 const statusText = document.getElementById("statusText");
 const modeLabel = document.getElementById("modeLabel");
 const elapsedTime = document.getElementById("elapsedTime");
@@ -213,7 +213,7 @@ function handleKeypadKey(key) {
 }
 
 function handleKeypadPointer(event) {
-  const button = event.target.closest(".keypad-button");
+  const button = event.target.closest("[data-key]");
   if (!button || !practicePanel.contains(button)) {
     return;
   }
