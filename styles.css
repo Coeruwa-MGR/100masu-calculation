@@ -128,6 +128,16 @@ h2 {
   font-weight: 900;
 }
 
+.setup-handed-toggle {
+  min-width: min(100%, 280px);
+}
+
+.handed-toggle[aria-pressed="true"] {
+  background: var(--accent);
+  color: #ffffff;
+  box-shadow: inset 4px 4px 10px rgba(0, 48, 44, 0.25), inset -4px -4px 10px rgba(255, 255, 255, 0.18);
+}
+
 .primary-button,
 .secondary-button {
   border: 0;
@@ -180,7 +190,7 @@ h2 {
 .practice-header {
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr auto auto auto;
+  grid-template-columns: 1fr auto auto;
   align-items: center;
   gap: 12px;
 }
@@ -503,7 +513,7 @@ h2 {
   }
 
   .practice-header {
-    grid-template-columns: 1fr auto auto auto;
+    grid-template-columns: 1fr auto auto;
   }
 
   .practice-body {
