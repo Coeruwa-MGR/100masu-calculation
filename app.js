@@ -3,6 +3,7 @@ const practicePanel = document.getElementById("practicePanel");
 const startButton = document.getElementById("startButton");
 const restartButton = document.getElementById("restartButton");
 const calculationGrid = document.getElementById("calculationGrid");
+const keypadButtons = document.querySelectorAll(".keypad-button");
 const statusText = document.getElementById("statusText");
 const modeLabel = document.getElementById("modeLabel");
 const elapsedTime = document.getElementById("elapsedTime");
@@ -23,6 +24,7 @@ let timerId = 0;
 let finished = false;
 let completedAtText = "";
 let accuracyPercent = 0;
+let currentInputIndex = 0;
 
 function shuffleDigits() {
   const digits = Array.from({ length: 10 }, (_, index) => index);
@@ -77,6 +79,18 @@ function clearResultImage() {
   resultImage.removeAttribute("src");
 }
 
+function checkCompletion() {
+  if (!finished && inputs.every((item) => item.value !== "")) {
+    finishPractice();
+  }
+}
+
+function setAnswerValue(input, value) {
+  input.value = value.replace(/\D/g, "").slice(0, 2);
+  input.classList.remove("is-correct", "is-wrong");
+  checkCompletion();
+}
+
 function makeCell(className, text) {
   const cell = document.createElement("div");
   cell.className = className;
@@ -101,10 +115,11 @@ function buildGrid() {
       const input = document.createElement("input");
       input.className = "answer-input";
       input.type = "text";
-      input.inputMode = "numeric";
+      input.inputMode = "none";
       input.autocomplete = "off";
       input.enterKeyHint = "next";
       input.maxLength = 2;
+      input.readOnly = true;
       input.dataset.row = String(row);
       input.dataset.column = String(column);
       const operatorLabel = mode === "addition" ? "\u8db3\u3059" : "\u304b\u3051\u308b";
@@ -112,6 +127,10 @@ function buildGrid() {
 
       input.addEventListener("input", handleInput);
       input.addEventListener("keydown", handleKeyDown);
+      input.addEventListener("focus", () => {
+        currentInputIndex = inputs.indexOf(input);
+        input.select();
+      });
 
       inputs.push(input);
       calculationGrid.appendChild(input);
@@ -124,12 +143,74 @@ function moveToIndex(index) {
   if (!next) {
     return;
   }
+  currentInputIndex = index;
   next.focus();
   next.select();
 }
 
+function getCurrentInput() {
+  return inputs[currentInputIndex] || inputs[0];
+}
+
+function moveNext() {
+  moveToIndex(Math.min(currentInputIndex + 1, inputs.length - 1));
+}
+
+function enterDigit(digit) {
+  const input = getCurrentInput();
+  if (!input || finished) {
+    return;
+  }
+
+  setAnswerValue(input, `${input.value}${digit}`);
+  if (!finished && input.value.length >= 2) {
+    moveNext();
+  } else if (!finished) {
+    input.focus();
+    input.select();
+  }
+}
+
+function deleteDigit() {
+  const input = getCurrentInput();
+  if (!input || finished) {
+    return;
+  }
+
+  if (input.value === "") {
+    moveToIndex(Math.max(currentInputIndex - 1, 0));
+    return;
+  }
+
+  setAnswerValue(input, input.value.slice(0, -1));
+  if (!finished) {
+    input.focus();
+    input.select();
+  }
+}
+
+function handleKeypad(event) {
+  const key = event.currentTarget.dataset.key;
+  if (key === "back") {
+    deleteDigit();
+    return;
+  }
+  if (key === "next") {
+    moveNext();
+    return;
+  }
+  enterDigit(key);
+}
+
 function handleKeyDown(event) {
   const index = inputs.indexOf(event.currentTarget);
+
+  if (/^\d$/.test(event.key)) {
+    event.preventDefault();
+    currentInputIndex = index;
+    enterDigit(event.key);
+    return;
+  }
 
   if (event.key === "Tab") {
     event.preventDefault();
@@ -138,26 +219,19 @@ function handleKeyDown(event) {
 
   if (event.key === "Enter") {
     event.preventDefault();
-    moveToIndex(index + 1);
+    moveNext();
   }
 
-  if (event.key === "Backspace" && event.currentTarget.value === "") {
-    moveToIndex(index - 1);
+  if (event.key === "Backspace") {
+    event.preventDefault();
+    currentInputIndex = index;
+    deleteDigit();
   }
 }
 
 function handleInput(event) {
   const input = event.currentTarget;
-  input.value = input.value.replace(/\D/g, "").slice(0, 2);
-
-  const row = Number(input.dataset.row);
-  const column = Number(input.dataset.column);
-
-  input.classList.remove("is-correct", "is-wrong");
-
-  if (!finished && inputs.every((item) => item.value !== "")) {
-    finishPractice();
-  }
+  setAnswerValue(input, input.value);
 }
 
 function startPractice() {
@@ -165,6 +239,7 @@ function startPractice() {
   topNumbers = shuffleDigits();
   sideNumbers = shuffleDigits();
   finished = false;
+  currentInputIndex = 0;
 
   modeLabel.textContent = mode === "addition" ? "\u8db3\u3057\u7b97" : "\u639b\u3051\u7b97";
   statusText.textContent = "\u8a08\u7b97\u4e2d";
@@ -350,3 +425,6 @@ function restartPractice() {
 startButton.addEventListener("click", startPractice);
 restartButton.addEventListener("click", restartPractice);
 retryButton.addEventListener("click", startPractice);
+keypadButtons.forEach((button) => {
+  button.addEventListener("click", handleKeypad);
+});
