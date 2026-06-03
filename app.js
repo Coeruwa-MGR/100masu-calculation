@@ -25,6 +25,7 @@ let finished = false;
 let completedAtText = "";
 let accuracyPercent = 0;
 let currentInputIndex = 0;
+let lastPointerKeyTime = 0;
 
 function shuffleDigits() {
   const digits = Array.from({ length: 10 }, (_, index) => index);
@@ -190,7 +191,16 @@ function deleteDigit() {
 }
 
 function handleKeypad(event) {
+  if (Date.now() - lastPointerKeyTime < 500) {
+    event.preventDefault();
+    return;
+  }
+
   const key = event.currentTarget.dataset.key;
+  handleKeypadKey(key);
+}
+
+function handleKeypadKey(key) {
   if (key === "back") {
     deleteDigit();
     return;
@@ -200,6 +210,17 @@ function handleKeypad(event) {
     return;
   }
   enterDigit(key);
+}
+
+function handleKeypadPointer(event) {
+  const button = event.target.closest(".keypad-button");
+  if (!button || !practicePanel.contains(button)) {
+    return;
+  }
+
+  event.preventDefault();
+  lastPointerKeyTime = Date.now();
+  handleKeypadKey(button.dataset.key);
 }
 
 function handleKeyDown(event) {
@@ -428,3 +449,4 @@ retryButton.addEventListener("click", startPractice);
 keypadButtons.forEach((button) => {
   button.addEventListener("click", handleKeypad);
 });
+document.addEventListener("pointerdown", handleKeypadPointer);
