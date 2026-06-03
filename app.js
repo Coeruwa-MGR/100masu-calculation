@@ -28,6 +28,7 @@ let completedAtText = "";
 let accuracyPercent = 0;
 let currentInputIndex = 0;
 let lastPointerKeyTime = 0;
+let lastHandedPointerTime = 0;
 let isLeftHanded = false;
 
 function shuffleDigits() {
@@ -95,6 +96,20 @@ function setAnswerValue(input, value) {
   checkCompletion();
 }
 
+function focusInputAtEnd(input) {
+  if (!input) {
+    return;
+  }
+
+  input.focus({ preventScroll: true });
+  const end = input.value.length;
+  try {
+    input.setSelectionRange(end, end);
+  } catch {
+    input.select();
+  }
+}
+
 function makeCell(className, text) {
   const cell = document.createElement("div");
   cell.className = className;
@@ -133,7 +148,12 @@ function buildGrid() {
       input.addEventListener("keydown", handleKeyDown);
       input.addEventListener("focus", () => {
         currentInputIndex = inputs.indexOf(input);
-        input.select();
+        const end = input.value.length;
+        try {
+          input.setSelectionRange(end, end);
+        } catch {
+          input.select();
+        }
       });
 
       inputs.push(input);
@@ -148,7 +168,7 @@ function moveToIndex(index) {
     return;
   }
   currentInputIndex = index;
-  next.focus();
+  next.focus({ preventScroll: true });
   next.select();
 }
 
@@ -165,28 +185,30 @@ function movePrev() {
 }
 
 function enterDigit(digit) {
-  const input = getCurrentInput();
+  const index = currentInputIndex;
+  const input = inputs[index];
   if (!input || finished) {
     return;
   }
 
   setAnswerValue(input, `${input.value}${digit}`);
+  currentInputIndex = index;
   if (!finished) {
-    input.focus();
-    input.select();
+    focusInputAtEnd(input);
   }
 }
 
 function deleteDigit() {
-  const input = getCurrentInput();
+  const index = currentInputIndex;
+  const input = inputs[index];
   if (!input || finished) {
     return;
   }
 
   setAnswerValue(input, input.value.slice(0, -1));
+  currentInputIndex = index;
   if (!finished) {
-    input.focus();
-    input.select();
+    focusInputAtEnd(input);
   }
 }
 
@@ -254,11 +276,30 @@ function handleKeyDown(event) {
   }
 }
 
-function toggleHandedMode() {
-  isLeftHanded = !isLeftHanded;
+function setHandedMode(nextValue) {
+  isLeftHanded = nextValue;
   practiceBody.classList.toggle("is-left-handed", isLeftHanded);
   handedToggle.textContent = isLeftHanded ? "\u53f3\u5229\u304d\u30e2\u30fc\u30c9" : "\u5de6\u5229\u304d\u30e2\u30fc\u30c9";
   handedToggle.setAttribute("aria-pressed", String(isLeftHanded));
+}
+
+function toggleHandedMode() {
+  setHandedMode(!isLeftHanded);
+}
+
+function handleHandedPointer(event) {
+  event.preventDefault();
+  lastHandedPointerTime = Date.now();
+  toggleHandedMode();
+}
+
+function handleHandedClick(event) {
+  if (Date.now() - lastHandedPointerTime < 500) {
+    event.preventDefault();
+    return;
+  }
+
+  toggleHandedMode();
 }
 
 function handleInput(event) {
@@ -456,7 +497,8 @@ function restartPractice() {
 
 startButton.addEventListener("click", startPractice);
 restartButton.addEventListener("click", restartPractice);
-handedToggle.addEventListener("click", toggleHandedMode);
+handedToggle.addEventListener("pointerdown", handleHandedPointer);
+handedToggle.addEventListener("click", handleHandedClick);
 retryButton.addEventListener("click", startPractice);
 keypadButtons.forEach((button) => {
   button.addEventListener("click", handleKeypad);
