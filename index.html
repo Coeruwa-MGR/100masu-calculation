@@ -38,11 +38,15 @@
           <div class="timer" aria-live="polite">
             <span id="elapsedTime">00:00.0</span>
           </div>
+          <button class="secondary-button handed-toggle" id="handedToggle" type="button">左利きモード</button>
           <button class="secondary-button" id="restartButton" type="button">やり直す</button>
         </header>
 
-        <div class="practice-body">
-          <button type="button" class="next-hand-button" data-key="next">次へ</button>
+        <div class="practice-body" id="practiceBody">
+          <div class="nav-controls" aria-label="回答マスの移動">
+            <button type="button" class="next-hand-button" data-key="next">次へ</button>
+            <button type="button" class="prev-hand-button" data-key="prev">前へ</button>
+          </div>
 
           <div class="grid-wrap" id="gridWrap">
             <div class="grid" id="calculationGrid" aria-label="計算表"></div>
