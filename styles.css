@@ -307,6 +307,8 @@ h2 {
   font-size: 1.05rem;
   font-weight: 900;
   cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
