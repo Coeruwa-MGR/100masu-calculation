@@ -2,6 +2,8 @@ const setupPanel = document.getElementById("setupPanel");
 const practicePanel = document.getElementById("practicePanel");
 const startButton = document.getElementById("startButton");
 const restartButton = document.getElementById("restartButton");
+const handedToggle = document.getElementById("handedToggle");
+const practiceBody = document.getElementById("practiceBody");
 const calculationGrid = document.getElementById("calculationGrid");
 const keypadButtons = document.querySelectorAll("[data-key]");
 const statusText = document.getElementById("statusText");
@@ -26,6 +28,7 @@ let completedAtText = "";
 let accuracyPercent = 0;
 let currentInputIndex = 0;
 let lastPointerKeyTime = 0;
+let isLeftHanded = false;
 
 function shuffleDigits() {
   const digits = Array.from({ length: 10 }, (_, index) => index);
@@ -157,6 +160,10 @@ function moveNext() {
   moveToIndex(Math.min(currentInputIndex + 1, inputs.length - 1));
 }
 
+function movePrev() {
+  moveToIndex(Math.max(currentInputIndex - 1, 0));
+}
+
 function enterDigit(digit) {
   const input = getCurrentInput();
   if (!input || finished) {
@@ -164,9 +171,7 @@ function enterDigit(digit) {
   }
 
   setAnswerValue(input, `${input.value}${digit}`);
-  if (!finished && input.value.length >= 2) {
-    moveNext();
-  } else if (!finished) {
+  if (!finished) {
     input.focus();
     input.select();
   }
@@ -175,11 +180,6 @@ function enterDigit(digit) {
 function deleteDigit() {
   const input = getCurrentInput();
   if (!input || finished) {
-    return;
-  }
-
-  if (input.value === "") {
-    moveToIndex(Math.max(currentInputIndex - 1, 0));
     return;
   }
 
@@ -209,6 +209,10 @@ function handleKeypadKey(key) {
     moveNext();
     return;
   }
+  if (key === "prev") {
+    movePrev();
+    return;
+  }
   enterDigit(key);
 }
 
@@ -235,12 +239,12 @@ function handleKeyDown(event) {
 
   if (event.key === "Tab") {
     event.preventDefault();
-    moveToIndex(index + (event.shiftKey ? -1 : 1));
+    return;
   }
 
   if (event.key === "Enter") {
     event.preventDefault();
-    moveNext();
+    return;
   }
 
   if (event.key === "Backspace") {
@@ -248,6 +252,13 @@ function handleKeyDown(event) {
     currentInputIndex = index;
     deleteDigit();
   }
+}
+
+function toggleHandedMode() {
+  isLeftHanded = !isLeftHanded;
+  practiceBody.classList.toggle("is-left-handed", isLeftHanded);
+  handedToggle.textContent = isLeftHanded ? "\u53f3\u5229\u304d\u30e2\u30fc\u30c9" : "\u5de6\u5229\u304d\u30e2\u30fc\u30c9";
+  handedToggle.setAttribute("aria-pressed", String(isLeftHanded));
 }
 
 function handleInput(event) {
@@ -445,6 +456,7 @@ function restartPractice() {
 
 startButton.addEventListener("click", startPractice);
 restartButton.addEventListener("click", restartPractice);
+handedToggle.addEventListener("click", toggleHandedMode);
 retryButton.addEventListener("click", startPractice);
 keypadButtons.forEach((button) => {
   button.addEventListener("click", handleKeypad);
