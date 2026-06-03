@@ -181,6 +181,7 @@ h2 {
 }
 
 .practice {
+  container-type: inline-size;
   display: grid;
   grid-template-rows: auto 1fr;
   gap: clamp(8px, 1.4vh, 14px);
@@ -208,17 +209,18 @@ h2 {
 }
 
 .practice-body {
-  --nav-width: clamp(112px, 11vw, 148px);
-  --keypad-width: clamp(208px, 20vw, 258px);
-  --control-gap: clamp(18px, 2vw, 28px);
+  --nav-width: clamp(56px, 12vw, 148px);
+  --keypad-width: clamp(92px, 20vw, 258px);
+  --control-gap: clamp(6px, 1.6vw, 28px);
   --panel-pad: clamp(12px, 1.4vw, 18px);
-  --grid-size: min(calc(100vw - var(--nav-width) - var(--keypad-width) - var(--control-gap) - var(--control-gap) - var(--control-gap) - var(--control-gap) - 36px), calc(100vh - 140px), 720px);
+  --grid-size: min(calc(100vw - var(--nav-width) - var(--keypad-width) - var(--control-gap) - var(--control-gap) - var(--control-gap) - var(--control-gap) - 48px), calc(100vh - 140px), 720px);
   width: 100%;
+  min-width: 0;
   display: grid;
-  grid-template-columns: var(--nav-width) var(--grid-size) var(--keypad-width);
+  grid-template-columns: minmax(var(--nav-width), 0.74fr) var(--grid-size) minmax(var(--keypad-width), 1fr);
   grid-template-areas: "nav grid keypad";
   align-items: center;
-  justify-content: center;
+  justify-content: stretch;
   gap: var(--control-gap);
   padding: var(--panel-pad) var(--control-gap);
   border-radius: 28px;
@@ -229,18 +231,31 @@ h2 {
 
 @supports (height: 100dvh) {
   .practice-body {
-    --grid-size: min(calc(100vw - var(--nav-width) - var(--keypad-width) - var(--control-gap) - var(--control-gap) - var(--control-gap) - var(--control-gap) - 36px), calc(100dvh - 140px), 720px);
+    --grid-size: min(calc(100vw - var(--nav-width) - var(--keypad-width) - var(--control-gap) - var(--control-gap) - var(--control-gap) - var(--control-gap) - 48px), calc(100dvh - 140px), 720px);
+  }
+}
+
+@supports (width: 100cqw) {
+  .practice-body {
+    --grid-size: min(calc(100cqw - var(--nav-width) - var(--keypad-width) - var(--control-gap) - var(--control-gap) - var(--control-gap) - var(--control-gap)), calc(100vh - 140px), 720px);
+  }
+}
+
+@supports (width: 100cqw) and (height: 100dvh) {
+  .practice-body {
+    --grid-size: min(calc(100cqw - var(--nav-width) - var(--keypad-width) - var(--control-gap) - var(--control-gap) - var(--control-gap) - var(--control-gap)), calc(100dvh - 140px), 720px);
   }
 }
 
 .practice-body.is-left-handed {
-  grid-template-columns: var(--keypad-width) var(--grid-size) var(--nav-width);
+  grid-template-columns: minmax(var(--keypad-width), 1fr) var(--grid-size) minmax(var(--nav-width), 0.74fr);
   grid-template-areas: "keypad grid nav";
 }
 
 .grid-wrap {
   grid-area: grid;
   width: var(--grid-size);
+  min-width: 0;
   height: var(--grid-size);
   padding: clamp(6px, 0.8vmin, 10px);
   border-radius: 18px;
@@ -313,6 +328,7 @@ h2 {
 .nav-controls {
   grid-area: nav;
   width: 100%;
+  min-width: 0;
   display: grid;
   gap: 12px;
 }
@@ -326,7 +342,7 @@ h2 {
 
 .next-hand-button {
   height: min(48vh, calc(var(--grid-size) * 0.58));
-  min-height: 180px;
+  min-height: 0;
   border-radius: 24px;
   background: var(--accent);
   color: #ffffff;
@@ -336,7 +352,7 @@ h2 {
 }
 
 .prev-hand-button {
-  min-height: 64px;
+  min-height: clamp(34px, calc(var(--grid-size) * 0.09), 64px);
   border-radius: 18px;
   background: var(--surface);
   color: var(--accent-strong);
@@ -348,6 +364,7 @@ h2 {
 .keypad {
   grid-area: keypad;
   width: 100%;
+  min-width: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: clamp(9px, 1.2vw, 14px);
@@ -355,12 +372,14 @@ h2 {
   border-radius: 24px;
   background: var(--surface);
   box-shadow: var(--shadow-raised);
+  overflow: hidden;
 }
 
 .keypad-button {
   width: 100%;
   aspect-ratio: 1 / 0.88;
-  min-height: 56px;
+  min-width: 0;
+  min-height: 0;
   border: 0;
   border-radius: 18px;
   background: var(--surface);
@@ -372,7 +391,8 @@ h2 {
 }
 
 .keypad-spacer {
-  min-height: 56px;
+  min-width: 0;
+  min-height: 0;
 }
 
 .finish-overlay {
@@ -517,9 +537,9 @@ h2 {
   }
 
   .practice-body {
-    --nav-width: 104px;
-    --keypad-width: 188px;
-    --control-gap: 14px;
+    --nav-width: clamp(52px, 11vw, 104px);
+    --keypad-width: clamp(86px, 19vw, 188px);
+    --control-gap: clamp(6px, 1.4vw, 14px);
     --panel-pad: 10px;
     --grid-size: min(calc(100vw - var(--nav-width) - var(--keypad-width) - var(--control-gap) - var(--control-gap) - var(--control-gap) - var(--control-gap) - 24px), calc(100vh - 136px));
   }
@@ -530,21 +550,37 @@ h2 {
     }
   }
 
+  @supports (width: 100cqw) {
+    .practice-body {
+      --grid-size: min(calc(100cqw - var(--nav-width) - var(--keypad-width) - var(--control-gap) - var(--control-gap) - var(--control-gap) - var(--control-gap)), calc(100vh - 136px));
+    }
+  }
+
+  @supports (width: 100cqw) and (height: 100dvh) {
+    .practice-body {
+      --grid-size: min(calc(100cqw - var(--nav-width) - var(--keypad-width) - var(--control-gap) - var(--control-gap) - var(--control-gap) - var(--control-gap)), calc(100dvh - 136px));
+    }
+  }
+
   .next-hand-button {
-    min-height: 150px;
+    height: min(45vh, calc(var(--grid-size) * 0.58));
   }
 
   .prev-hand-button {
-    min-height: 52px;
+    min-height: clamp(30px, calc(var(--grid-size) * 0.09), 52px);
   }
 
   .keypad-button,
   .keypad-spacer {
-    min-height: 48px;
+    min-height: 0;
   }
 }
 
 @media (max-width: 760px) {
+  .app-shell {
+    padding: 6px;
+  }
+
   .practice-header {
     grid-template-columns: 1fr auto;
   }
@@ -555,42 +591,91 @@ h2 {
   }
 
   .practice-body {
-    --grid-size: min(calc(100vw - var(--control-gap) - var(--control-gap) - 20px), calc(100vh - 268px));
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "grid"
-      "keypad"
-      "nav";
-    justify-items: center;
+    --nav-width: clamp(46px, 12vw, 76px);
+    --keypad-width: clamp(78px, 22vw, 132px);
+    --control-gap: clamp(4px, 1.3vw, 10px);
+    --panel-pad: 6px;
+    --grid-size: min(calc(100vw - var(--nav-width) - var(--keypad-width) - var(--control-gap) - var(--control-gap) - var(--control-gap) - var(--control-gap) - 12px), calc(100vh - 120px));
+    grid-template-columns: minmax(var(--nav-width), 0.74fr) var(--grid-size) minmax(var(--keypad-width), 1fr);
+    grid-template-areas: "nav grid keypad";
+    justify-items: stretch;
+    padding: var(--control-gap);
+    border-radius: 20px;
   }
 
   @supports (height: 100dvh) {
     .practice-body {
-      --grid-size: min(calc(100vw - var(--control-gap) - var(--control-gap) - 20px), calc(100dvh - 268px));
+      --grid-size: min(calc(100vw - var(--nav-width) - var(--keypad-width) - var(--control-gap) - var(--control-gap) - var(--control-gap) - var(--control-gap) - 12px), calc(100dvh - 120px));
     }
   }
 
+  @supports (width: 100cqw) {
+    .practice-body {
+      --grid-size: min(calc(100cqw - var(--nav-width) - var(--keypad-width) - var(--control-gap) - var(--control-gap) - var(--control-gap) - var(--control-gap)), calc(100vh - 120px));
+    }
+  }
+
+  @supports (width: 100cqw) and (height: 100dvh) {
+    .practice-body {
+      --grid-size: min(calc(100cqw - var(--nav-width) - var(--keypad-width) - var(--control-gap) - var(--control-gap) - var(--control-gap) - var(--control-gap)), calc(100dvh - 120px));
+    }
+  }
+
+  .practice-body.is-left-handed {
+    grid-template-columns: minmax(var(--keypad-width), 1fr) var(--grid-size) minmax(var(--nav-width), 0.74fr);
+    grid-template-areas: "keypad grid nav";
+  }
+
+  .grid-wrap {
+    padding: clamp(3px, 0.8vw, 6px);
+    border-radius: 14px;
+  }
+
+  .grid {
+    gap: clamp(2px, 0.6vw, 4px);
+  }
+
+  .header-cell,
+  .corner-cell {
+    font-size: clamp(0.56rem, 2.2vw, 0.9rem);
+  }
+
+  .answer-input {
+    font-size: clamp(0.56rem, 2.2vw, 0.9rem);
+  }
+
+  .nav-controls {
+    gap: clamp(4px, 1.2vw, 8px);
+  }
+
   .next-hand-button {
-    width: min(100%, 520px);
-    height: 54px;
-    min-height: 54px;
-    font-size: 1.35rem;
+    width: 100%;
+    height: min(42vh, calc(var(--grid-size) * 0.58));
+    min-height: 0;
+    border-radius: 16px;
+    font-size: clamp(0.78rem, 3vw, 1.25rem);
   }
 
   .prev-hand-button {
-    width: min(100%, 520px);
-    min-height: 44px;
+    width: 100%;
+    min-height: clamp(24px, calc(var(--grid-size) * 0.09), 40px);
+    border-radius: 13px;
+    font-size: clamp(0.65rem, 2.3vw, 0.95rem);
   }
 
   .keypad {
-    width: min(100%, 520px);
-    grid-template-columns: repeat(6, 1fr);
+    width: 100%;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(4px, 1.1vw, 8px);
+    padding: clamp(5px, 1.2vw, 8px);
+    border-radius: 16px;
   }
 
   .keypad-button,
   .keypad-spacer {
-    min-height: 42px;
-    font-size: 1rem;
+    min-height: 0;
+    border-radius: clamp(8px, 2vw, 12px);
+    font-size: clamp(0.78rem, 3.2vw, 1.1rem);
   }
 
   .finish-overlay {
