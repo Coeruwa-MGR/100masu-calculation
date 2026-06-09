@@ -6,6 +6,7 @@ const handedToggle = document.getElementById("handedToggle");
 const practiceBody = document.getElementById("practiceBody");
 const calculationGrid = document.getElementById("calculationGrid");
 const keypadButtons = document.querySelectorAll("[data-key]");
+const nextHandButton = document.querySelector("[data-key='next']");
 const statusText = document.getElementById("statusText");
 const modeLabel = document.getElementById("modeLabel");
 const elapsedTime = document.getElementById("elapsedTime");
@@ -84,16 +85,9 @@ function clearResultImage() {
   resultImage.removeAttribute("src");
 }
 
-function checkCompletion() {
-  if (!finished && inputs.every((item) => item.value !== "")) {
-    finishPractice();
-  }
-}
-
 function setAnswerValue(input, value) {
   input.value = value.replace(/\D/g, "").slice(0, 2);
   input.classList.remove("is-correct", "is-wrong");
-  checkCompletion();
 }
 
 function focusInputAtEnd(input) {
@@ -168,6 +162,7 @@ function moveToIndex(index) {
     return;
   }
   currentInputIndex = index;
+  updateNextButtonLabel();
   next.focus({ preventScroll: true });
   next.select();
 }
@@ -177,11 +172,39 @@ function getCurrentInput() {
 }
 
 function moveNext() {
-  moveToIndex(Math.min(currentInputIndex + 1, inputs.length - 1));
+  if (currentInputIndex >= inputs.length - 1) {
+    showResultIfReady();
+    return;
+  }
+
+  moveToIndex(currentInputIndex + 1);
 }
 
 function movePrev() {
   moveToIndex(Math.max(currentInputIndex - 1, 0));
+}
+
+function updateNextButtonLabel() {
+  if (!nextHandButton) {
+    return;
+  }
+
+  const isLastCell = inputs.length > 0 && currentInputIndex === inputs.length - 1;
+  nextHandButton.textContent = isLastCell ? "\u7d50\u679c\u3078" : "\u6b21\u3078";
+  nextHandButton.setAttribute(
+    "aria-label",
+    isLastCell ? "\u7d50\u679c\u753b\u9762\u3078\u9032\u3080" : "\u6b21\u306e\u30de\u30b9\u3078\u9032\u3080",
+  );
+}
+
+function showResultIfReady() {
+  const firstBlankIndex = inputs.findIndex((input) => input.value === "");
+  if (firstBlankIndex !== -1) {
+    moveToIndex(firstBlankIndex);
+    return;
+  }
+
+  finishPractice();
 }
 
 function enterDigit(digit) {
